@@ -10,29 +10,27 @@ export default function AnalogTimer() {
   const [isRunning, setIsRunning] = useState(false)
   const timerRef = useRef(null)
 
-  const startTimer = () => {
-    if (!isRunning) {
-      setIsRunning(true)
-      timerRef.current = setInterval(() => {
-        setTimeRemaining((prev) => {
-          if (prev <= 1) {
-            clearInterval(timerRef.current)
-            setIsRunning(false)
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
-    }
-  }
+  // Start timer automatically when component mounts
+  useEffect(() => {
+    setIsRunning(true)
+    timerRef.current = setInterval(() => {
+      setTimeRemaining((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current)
+          setIsRunning(false)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
 
-  const resetTimer = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current)
+    // Cleanup interval on component unmount
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+      }
     }
-    setTimeRemaining(TIMER_DURATION)
-    setIsRunning(false)
-  }
+  }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -136,21 +134,6 @@ export default function AnalogTimer() {
     <div className="flex flex-col items-center">
       <div className="relative w-full aspect-square">
         <canvas ref={canvasRef} className="w-full h-full" />
-      </div>
-      <div className="mt-6 flex space-x-4">
-        <button
-          onClick={startTimer}
-          disabled={isRunning}
-          className="px-4 py-2 bg-blue-600 text-white rounded disabled:bg-blue-300"
-        >
-          Start
-        </button>
-        <button 
-          onClick={resetTimer} 
-          className="px-4 py-2 bg-gray-600 text-white rounded"
-        >
-          Reset
-        </button>
       </div>
     </div>
   )
