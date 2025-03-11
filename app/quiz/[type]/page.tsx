@@ -1,16 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import DigitalTimer from "@/components/digital-timer";
 import AnalogueTimer from "@/components/analogue-timer";
-import { NextPage } from "next";
-
-interface QuizPageProps {
-  params: {
-    type: string;
-  };
-}
+import React from "react";
 
 // Sample quiz questions and options (placeholder)
 const quizQuestions = [
@@ -31,9 +25,12 @@ const quizQuestions = [
   },
 ];
 
-const QuizPage: NextPage<QuizPageProps> = ({ params }) => {
+export default function Page() {
+  // Use hooks to get params instead of receiving them as props
+  const params = useParams();
+  const quizType = (params?.type as string) || "no-timer";
+
   const router = useRouter();
-  const quizType = params.type;
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [userAnswers, setUserAnswers] = useState<number[]>(
     Array(quizQuestions.length).fill(-1)
@@ -58,9 +55,12 @@ const QuizPage: NextPage<QuizPageProps> = ({ params }) => {
   };
 
   const handleSubmit = () => {
+    // Calculate score
     const score = userAnswers.reduce((total, answer, index) => {
       return total + (answer === quizQuestions[index].correctAnswer ? 1 : 0);
     }, 0);
+
+    // Navigate to thank you page with score
     router.push(`/thank-you?score=${score}&total=${quizQuestions.length}`);
   };
 
@@ -80,6 +80,7 @@ const QuizPage: NextPage<QuizPageProps> = ({ params }) => {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gray-50 relative">
       <div className="absolute top-4 right-4">{renderTimer()}</div>
+
       <div className="absolute top-4 left-4">
         <button
           onClick={() => router.push("/")}
@@ -88,15 +89,18 @@ const QuizPage: NextPage<QuizPageProps> = ({ params }) => {
           Back to Selection
         </button>
       </div>
+
       <div className="max-w-2xl w-full bg-white p-8 rounded-lg shadow-md">
         <div className="flex justify-between mb-4">
           <span className="text-sm text-gray-500">
             Question {currentQuestion + 1} of {quizQuestions.length}
           </span>
         </div>
+
         <h2 className="text-xl font-semibold mb-6">
           {currentQuizData.question}
         </h2>
+
         <div className="space-y-3">
           {currentQuizData.options.map((option, index) => (
             <div
@@ -112,6 +116,7 @@ const QuizPage: NextPage<QuizPageProps> = ({ params }) => {
             </div>
           ))}
         </div>
+
         <div className="mt-8 flex justify-between">
           <button
             onClick={handlePreviousQuestion}
@@ -124,6 +129,7 @@ const QuizPage: NextPage<QuizPageProps> = ({ params }) => {
           >
             Previous
           </button>
+
           {currentQuestion < quizQuestions.length - 1 ? (
             <button
               onClick={handleNextQuestion}
@@ -143,6 +149,4 @@ const QuizPage: NextPage<QuizPageProps> = ({ params }) => {
       </div>
     </main>
   );
-};
-
-export default QuizPage;
+}
