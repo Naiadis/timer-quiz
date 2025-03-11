@@ -1,67 +1,157 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 
-interface AnalogueTimerProps {
-  duration: number // in seconds
-}
+const TIMER_DURATION = 20 * 60 // 20 minutes in seconds
 
-export default function AnalogueTimer({ duration }: AnalogueTimerProps) {
-  const [timeLeft, setTimeLeft] = useState(duration)
-  const size = 60 // size of the clock in pixels
-  const radius = size / 2
-  const center = radius
-  const totalMinutes = Math.ceil(duration / 60)
+export default function AnalogTimer() {
+  const canvasRef = useRef(null)
+  const [timeRemaining, setTimeRemaining] = useState(TIMER_DURATION)
+  const [isRunning, setIsRunning] = useState(false)
+  const timerRef = useRef(null)
 
-  useEffect(() => {
-    if (timeLeft <= 0) return
-
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1)
-    }, 1000)
-
-    return () => clearInterval(timer)
-  }, [timeLeft])
-
-  // Calculate the angle for the hand based on time left
-  const angle = (timeLeft / duration) * 360
-
-  // Calculate the coordinates for the hand
-  const handX = center + radius * 0.8 * Math.sin((angle * Math.PI) / 180)
-  const handY = center - radius * 0.8 * Math.cos((angle * Math.PI) / 180)
-
-  // Generate clock numbers (simplified)
-  const clockNumbers = []
-  for (let i = 0; i < 4; i++) {
-    const numberAngle = (i * 90 * Math.PI) / 180
-    const numberX = center + radius * 0.7 * Math.sin(numberAngle)
-    const numberY = center - radius * 0.7 * Math.cos(numberAngle)
-
-    // Convert clock position to minutes (for a 20-minute clock)
-    const minuteValue = Math.round((i / 12) * totalMinutes)
-
-    clockNumbers.push(
-      <text key={i} x={numberX} y={numberY + 4} textAnchor="middle" fontSize="8">
-        {minuteValue}
-      </text>,
-    )
+  const startTimer = () => {
+    if (!isRunning) {
+      setIsRunning(true)
+      timerRef.current = setInterval(() => {
+        setTimeRemaining((prev) => {
+          if (prev <= 1) {
+            clearInterval(timerRef.current)
+            setIsRunning(false)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    }
   }
 
+  const resetTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+    }
+    setTimeRemaining(TIMER_DURATION)
+    setIsRunning(false)
+  }
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    // Set canvas dimensions with higher resolution
+    const dpr = window.devicePixelRatio || 1
+    const rect = canvas.getBoundingClientRect()
+    canvas.width = rect.width * dpr
+    canvas.height = rect.height * dpr
+    ctx.scale(dpr, dpr)
+
+    canvas.style.width = `${rect.width}px`
+    canvas.style.height = `${rect.height}px`
+
+    const centerX = rect.width / 2
+    const centerY = rect.height / 2
+    const radius = Math.min(centerX, centerY) * 0.85
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+    // Draw outer circle
+    ctx.beginPath()
+    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2)
+    ctx.strokeStyle = "#3b4f6b"
+    ctx.lineWidth = 2
+    ctx.stroke()
+
+    // Draw minute markers and numbers
+    ctx.font = "bold 16px Arial"
+    ctx.textAlign = "center"
+    ctx.textBaseline = "middle"
+    ctx.fillStyle = "#3b4f6b"
+
+    for (let i = 0; i < 60; i++) {
+      const angle = (Math.PI * 2 * i) / 60 - Math.PI / 2
+      const x1 = centerX + Math.cos(angle) * radius
+      const y1 = centerY + Math.sin(angle) * radius
+
+      if (i % 5 === 0) {
+        // Draw numbers with swapped positions
+        const numberX = centerX + Math.cos(angle) * (radius * 0.8)
+        const numberY = centerY + Math.sin(angle) * (radius * 0.8)
+        
+        // Determine the swapped number
+        let displayNumber = i
+        if (i !== 0 && i !== 30) {
+          displayNumber = (60 - i) % 60
+        }
+        
+        ctx.fillText(displayNumber.toString(), numberX, numberY)
+
+        // Longer tick for 5-minute intervals
+        const x2 = centerX + Math.cos(angle) * (radius * 0.9)
+        const y2 = centerY + Math.sin(angle) * (radius * 0.9)
+
+        ctx.beginPath()
+        ctx.moveTo(x2, y2)
+        ctx.lineTo(x1, y1)
+        ctx.lineWidth = 2
+        ctx.stroke()
+      } else {
+        // Shorter tick for 1-minute intervals
+        const x2 = centerX + Math.cos(angle) * (radius * 0.95)
+        const y2 = centerY + Math.sin(angle) * (radius * 0.95)
+
+        ctx.beginPath()
+        ctx.moveTo(x2, y2)
+        ctx.lineTo(x1, y1)
+        ctx.lineWidth = 1
+        ctx.stroke()
+      }
+    }
+
+    // Calculate angles for the pie
+    const fixedStartAngle = (Math.PI * 2 * 40) / 60 - Math.PI / 2 // 40-minute mark
+    const endAngle = -Math.PI / 2 // 0-minute mark (top)
+    
+    // Calculate the current start angle based on time remaining
+    const progress = 1 - (timeRemaining / TIMER_DURATION) // 0.0 at start, 1.0 at end
+    
+    // As time passes, this progressively moves the start angle from 40-minute mark toward 0-minute mark
+    const currentStartAngle = fixedStartAngle + progress * ((endAngle + Math.PI * 2) - fixedStartAngle)
+    
+    // Draw the pie (filled area)
+    ctx.beginPath()
+    ctx.moveTo(centerX, centerY)
+    ctx.arc(centerX, centerY, radius * 0.85, currentStartAngle, endAngle + Math.PI * 2)
+    ctx.lineTo(centerX, centerY)
+    ctx.closePath()
+    ctx.fillStyle = "rgba(180, 190, 210, 0.6)"
+    ctx.fill()
+
+  }, [timeRemaining])
+
   return (
-    <div className="bg-white border border-gray-200 rounded-full p-1 shadow-sm">
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        {/* Clock face */}
-        <circle cx={center} cy={center} r={radius - 2} fill="white" stroke="#e5e7eb" strokeWidth="1" />
-
-        {/* Clock numbers */}
-        {clockNumbers}
-
-        {/* Clock hand */}
-        <line x1={center} y1={center} x2={handX} y2={handY} stroke="black" strokeWidth="2" strokeLinecap="round" />
-
-        {/* Center dot */}
-        <circle cx={center} cy={center} r="2" fill="black" />
-      </svg>
+    <div className="flex flex-col items-center">
+      <div className="relative w-full aspect-square">
+        <canvas ref={canvasRef} className="w-full h-full" />
+      </div>
+      <div className="mt-6 flex space-x-4">
+        <button
+          onClick={startTimer}
+          disabled={isRunning}
+          className="px-4 py-2 bg-blue-600 text-white rounded disabled:bg-blue-300"
+        >
+          Start
+        </button>
+        <button 
+          onClick={resetTimer} 
+          className="px-4 py-2 bg-gray-600 text-white rounded"
+        >
+          Reset
+        </button>
+      </div>
     </div>
   )
 }
