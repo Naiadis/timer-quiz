@@ -6,22 +6,132 @@ import DigitalTimer from "@/components/digital-timer";
 import AnalogueTimer from "@/components/analogue-timer";
 import React from "react";
 
-// Sample quiz questions and options (placeholder)
+// Updated quiz questions from general knowledge quiz
 const quizQuestions = [
   {
-    question: "What is the capital of France?",
-    options: ["London", "Berlin", "Paris", "Madrid"],
+    question: "Which ancient wonder was located in Alexandria, Egypt?",
+    options: [
+      "Hanging Gardens",
+      "Colossus of Rhodes",
+      "Lighthouse (Pharos)",
+      "Temple of Artemis",
+    ],
     correctAnswer: 2,
   },
   {
-    question: "Which planet is known as the Red Planet?",
-    options: ["Venus", "Mars", "Jupiter", "Saturn"],
+    question: "What is the chemical symbol for gold?",
+    options: ["Au", "Ag", "Fe", "Ge"],
+    correctAnswer: 0,
+  },
+  {
+    question: 'Who wrote the novel "1984"?',
+    options: [
+      "Aldous Huxley",
+      "George Orwell",
+      "Ray Bradbury",
+      "Kurt Vonnegut",
+    ],
     correctAnswer: 1,
   },
   {
-    question: "What is the largest mammal?",
-    options: ["Elephant", "Giraffe", "Blue Whale", "Hippopotamus"],
+    question: "Which mountain range separates Europe from Asia?",
+    options: ["Alps", "Andes", "Himalayas", "Urals"],
+    correctAnswer: 3,
+  },
+  {
+    question: "What is the capital of New Zealand?",
+    options: ["Auckland", "Wellington", "Christchurch", "Sydney"],
+    correctAnswer: 1,
+  },
+  {
+    question: "Which planet has the Great Red Spot?",
+    options: ["Mars", "Venus", "Jupiter", "Saturn"],
     correctAnswer: 2,
+  },
+  {
+    question: 'Who painted "Starry Night"?',
+    options: [
+      "Pablo Picasso",
+      "Claude Monet",
+      "Vincent van Gogh",
+      "Leonardo da Vinci",
+    ],
+    correctAnswer: 2,
+  },
+  {
+    question: "What is the largest organ in the human body?",
+    options: ["Liver", "Brain", "Lungs", "Skin"],
+    correctAnswer: 3,
+  },
+  {
+    question: "Which country was the first to reach the South Pole?",
+    options: ["United States", "Norway", "United Kingdom", "Russia"],
+    correctAnswer: 1,
+  },
+  {
+    question: "What is the longest river in the world?",
+    options: ["Amazon", "Nile", "Yangtze", "Mississippi"],
+    correctAnswer: 1,
+  },
+  {
+    question: 'Who composed the "Moonlight Sonata"?',
+    options: ["Mozart", "Bach", "Beethoven", "Chopin"],
+    correctAnswer: 2,
+  },
+  {
+    question: "Which element has the atomic number 1?",
+    options: ["Helium", "Hydrogen", "Oxygen", "Carbon"],
+    correctAnswer: 1,
+  },
+  {
+    question: "What is the currency of Japan?",
+    options: ["Yuan", "Won", "Yen", "Ringgit"],
+    correctAnswer: 2,
+  },
+  {
+    question: 'Who wrote "Romeo and Juliet"?',
+    options: [
+      "Charles Dickens",
+      "William Shakespeare",
+      "Jane Austen",
+      "Mark Twain",
+    ],
+    correctAnswer: 1,
+  },
+  {
+    question: "Which country has the largest population in the world?",
+    options: ["India", "United States", "China", "Indonesia"],
+    correctAnswer: 0,
+  },
+  {
+    question: "What year did World War I begin?",
+    options: ["1914", "1916", "1918", "1939"],
+    correctAnswer: 0,
+  },
+  {
+    question: "What is the smallest prime number?",
+    options: ["0", "1", "2", "3"],
+    correctAnswer: 2,
+  },
+  {
+    question: "Which of these is not a noble gas?",
+    options: ["Neon", "Argon", "Nitrogen", "Helium"],
+    correctAnswer: 2,
+  },
+  {
+    question: "Who was the first woman to win a Nobel Prize?",
+    options: [
+      "Mother Teresa",
+      "Marie Curie",
+      "Rosalind Franklin",
+      "Dorothy Hodgkin",
+    ],
+    correctAnswer: 1,
+  },
+  {
+    question: "Which ocean is the largest?",
+    options: ["Atlantic", "Indian", "Arctic", "Pacific"],
+    correctAnswer: 3,
   },
 ];
 
