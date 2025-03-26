@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 
-const TIMER_DURATION = 20 * 60 // 20 minutes in seconds
+const TIMER_DURATION = 5 * 60 // 5 minutes in seconds
 
 export default function AnalogTimer() {
   const canvasRef = useRef(null)
@@ -51,7 +51,7 @@ export default function AnalogTimer() {
 
     const centerX = rect.width / 2
     const centerY = rect.height / 2
-    const radius = Math.min(centerX, centerY) * 0.85
+    const radius = Math.min(centerX, centerY) * 0.75
 
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -110,19 +110,19 @@ export default function AnalogTimer() {
     }
 
     // Calculate angles for the pie
-    const fixedStartAngle = (Math.PI * 2 * 40) / 60 - Math.PI / 2 // 40-minute mark
+    const fixedStartAngle = (Math.PI * 2 * 55) / 60 - Math.PI / 2 // 55-minute mark (adjusted for 5 min timer)
     const endAngle = -Math.PI / 2 // 0-minute mark (top)
     
     // Calculate the current start angle based on time remaining
-    const progress = 1 - (timeRemaining / TIMER_DURATION) // 0.0 at start, 1.0 at end
+    const progress = 1 - (timeRemaining / TIMER_DURATION)
     
-    // As time passes, this progressively moves the start angle from 40-minute mark toward 0-minute mark
+    // As time passes, this progressively moves the start angle from 55-minute mark toward 0-minute mark
     const currentStartAngle = fixedStartAngle + progress * ((endAngle + Math.PI * 2) - fixedStartAngle)
     
     // Draw the pie (filled area)
     ctx.beginPath()
     ctx.moveTo(centerX, centerY)
-    ctx.arc(centerX, centerY, radius * 0.85, currentStartAngle, endAngle + Math.PI * 2)
+    ctx.arc(centerX, centerY, radius, currentStartAngle, endAngle + Math.PI * 2)
     ctx.lineTo(centerX, centerY)
     ctx.closePath()
     ctx.fillStyle = "rgba(180, 190, 210, 0.6)"
