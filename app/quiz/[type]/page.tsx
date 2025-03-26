@@ -177,9 +177,9 @@ export default function Page() {
   const renderTimer = () => {
     switch (quizType) {
       case "digital-timer":
-        return <DigitalTimer duration={1200} />;
+        return <DigitalTimer duration={300} />;
       case "analogue-timer":
-        return <AnalogueTimer duration={1200} />;
+        return <AnalogueTimer duration={300} />;
       default:
         return null;
     }
