@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import DigitalTimer from "@/components/digital-timer";
 import AnalogueTimer from "@/components/analogue-timer";
@@ -136,7 +136,6 @@ const quizQuestions = [
 ];
 
 export default function Page() {
-  // Use hooks to get params instead of receiving them as props
   const params = useParams();
   const quizType = (params?.type as string) || "no-timer";
 
@@ -146,12 +145,23 @@ export default function Page() {
     Array(quizQuestions.length).fill(-1)
   );
   const [timeLeft, setTimeLeft] = useState(300);
+  const timerEndedRef = useRef(false);
+
+  useEffect(() => {
+    if (timeLeft <= 0 && !timerEndedRef.current) {
+      timerEndedRef.current = true;
+      const score = calculateScore();
+      // Use setTimeout to move the router.push outside of the render cycle
+      setTimeout(() => {
+        router.push(`/thank-you?score=${score}&total=${quizQuestions.length}`);
+      }, 0);
+    }
+  }, [timeLeft, router]);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          handleTimeUp();
           clearInterval(timer);
           return 0;
         }
@@ -161,6 +171,12 @@ export default function Page() {
 
     return () => clearInterval(timer);
   }, []);
+
+  const calculateScore = () => {
+    return userAnswers.reduce((total, answer, index) => {
+      return total + (answer === quizQuestions[index].correctAnswer ? 1 : 0);
+    }, 0);
+  };
 
   const handleOptionClick = (index: number) => {
     const newAnswers = [...userAnswers];
@@ -180,11 +196,14 @@ export default function Page() {
     }
   };
 
-  const handleTimeUp = () => {
-    const score = userAnswers.reduce((total, answer, index) => {
-      return total + (answer === quizQuestions[index].correctAnswer ? 1 : 0);
-    }, 0);
+  const handleSubmit = () => {
+    const score = calculateScore();
     router.push(`/thank-you?score=${score}&total=${quizQuestions.length}`);
+  };
+
+  const handleTimeUp = () => {
+    // Set timeLeft to 0, which will trigger the useEffect that handles navigation
+    setTimeLeft(0);
   };
 
   const renderTimer = () => {
@@ -262,7 +281,7 @@ export default function Page() {
             </button>
           ) : (
             <button
-              onClick={handleTimeUp}
+              onClick={handleSubmit}
               className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
             >
               Submit Quiz
