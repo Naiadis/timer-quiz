@@ -145,6 +145,22 @@ export default function Page() {
   const [userAnswers, setUserAnswers] = useState<number[]>(
     Array(quizQuestions.length).fill(-1)
   );
+  const [timeLeft, setTimeLeft] = useState(300);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          handleTimeUp();
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const handleOptionClick = (index: number) => {
     const newAnswers = [...userAnswers];
@@ -164,22 +180,19 @@ export default function Page() {
     }
   };
 
-  const handleSubmit = () => {
-    // Calculate score
+  const handleTimeUp = () => {
     const score = userAnswers.reduce((total, answer, index) => {
       return total + (answer === quizQuestions[index].correctAnswer ? 1 : 0);
     }, 0);
-
-    // Navigate to thank you page with score
     router.push(`/thank-you?score=${score}&total=${quizQuestions.length}`);
   };
 
   const renderTimer = () => {
     switch (quizType) {
       case "digital-timer":
-        return <DigitalTimer duration={300} />;
+        return <DigitalTimer duration={300} onTimeUp={handleTimeUp} />;
       case "analogue-timer":
-        return <AnalogueTimer duration={300} />;
+        return <AnalogueTimer duration={300} onTimeUp={handleTimeUp} />;
       default:
         return null;
     }
@@ -249,7 +262,7 @@ export default function Page() {
             </button>
           ) : (
             <button
-              onClick={handleSubmit}
+              onClick={handleTimeUp}
               className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
             >
               Submit Quiz

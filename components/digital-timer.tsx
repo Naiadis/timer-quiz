@@ -4,20 +4,27 @@ import { useState, useEffect } from "react";
 
 interface DigitalTimerProps {
   duration: number; // in seconds
+  onTimeUp: () => void;
 }
 
-export default function DigitalTimer({ duration }: DigitalTimerProps) {
+export default function DigitalTimer({
+  duration,
+  onTimeUp,
+}: DigitalTimerProps) {
   const [timeLeft, setTimeLeft] = useState(duration);
 
   useEffect(() => {
-    if (timeLeft <= 0) return;
+    if (timeLeft <= 0) {
+      onTimeUp();
+      return;
+    }
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => prev - 1);
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [timeLeft]);
+  }, [timeLeft, onTimeUp]);
 
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
