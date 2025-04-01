@@ -7,39 +7,52 @@ interface AnalogueTimerProps {
   onTimeUp: () => void;
 }
 
-const TIMER_DURATION = 5 * 60; // 5 minutes in seconds
-
 export default function AnalogueTimer({
   duration,
   onTimeUp,
 }: AnalogueTimerProps) {
   const canvasRef = useRef(null);
   const [timeRemaining, setTimeRemaining] = useState(duration);
-  const [isRunning, setIsRunning] = useState(false);
-  const timerRef = useRef(null);
+  const [isRunning, setIsRunning] = useState(true);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timeUpCallbackRef = useRef(onTimeUp);
 
-  // Start timer automatically when component mounts
+  // Update the callback ref if it changes
   useEffect(() => {
-    setIsRunning(true);
+    timeUpCallbackRef.current = onTimeUp;
+  }, [onTimeUp]);
+
+  useEffect(() => {
+    // Only start the timer if it's running and we have time remaining
+    if (!isRunning || timeRemaining <= 0) return;
+
     timerRef.current = setInterval(() => {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
-          clearInterval(timerRef.current);
-          setIsRunning(false);
-          onTimeUp(); // apelăm callback-ul când timpul ajunge la 0
+          // Clear the interval
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+          }
+          
+          // Use setTimeout to safely call the time up callback
+          setTimeout(() => {
+            setIsRunning(false);
+            timeUpCallbackRef.current();
+          }, 0);
+
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
 
-    // Cleanup interval on component unmount
+    // Cleanup function to clear interval
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
     };
-  }, [onTimeUp]);
+  }, [isRunning]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

@@ -144,32 +144,14 @@ export default function Page() {
   const [userAnswers, setUserAnswers] = useState<number[]>(
     Array(quizQuestions.length).fill(-1)
   );
-  const [timeLeft, setTimeLeft] = useState(300);
-  const timerEndedRef = useRef(false);
+  const [timerActive, setTimerActive] = useState(true);
+  const hasMountedRef = useRef(false);
 
   useEffect(() => {
-    if (timeLeft <= 0 && !timerEndedRef.current) {
-      timerEndedRef.current = true;
-      const score = calculateScore();
-      // Use setTimeout to move the router.push outside of the render cycle
-      setTimeout(() => {
-        router.push(`/thank-you?score=${score}&total=${quizQuestions.length}`);
-      }, 0);
-    }
-  }, [timeLeft, router]);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
+    hasMountedRef.current = true;
+    return () => {
+      hasMountedRef.current = false;
+    };
   }, []);
 
   const calculateScore = () => {
@@ -202,11 +184,22 @@ export default function Page() {
   };
 
   const handleTimeUp = () => {
-    // Set timeLeft to 0, which will trigger the useEffect that handles navigation
-    setTimeLeft(0);
+    // Prevent duplicate redirects
+    if (timerActive && hasMountedRef.current) {
+      setTimerActive(false);
+      const score = calculateScore();
+      // Use setTimeout to move router.push outside the render cycle
+      setTimeout(() => {
+        if (hasMountedRef.current) {
+          router.push(`/thank-you?score=${score}&total=${quizQuestions.length}`);
+        }
+      }, 0);
+    }
   };
 
   const renderTimer = () => {
+    if (!timerActive) return null;
+    
     switch (quizType) {
       case "digital-timer":
         return <DigitalTimer duration={300} onTimeUp={handleTimeUp} />;
@@ -226,7 +219,7 @@ export default function Page() {
       <div className="absolute top-4 left-4">
         <button
           onClick={() => router.push("/")}
-          className="px-4 py-2 bg-gray-50 text-gray-50 rounded-md hover:bg-gray-50 transition-colors border-0"
+          className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
         >
           Back to Selection
         </button>
@@ -290,5 +283,5 @@ export default function Page() {
         </div>
       </div>
     </main>
-  );
-}
+    );
+  }
