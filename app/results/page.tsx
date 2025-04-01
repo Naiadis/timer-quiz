@@ -1,35 +1,35 @@
-"use client"
+"use client";
 
-import { useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function ResultsPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [score, setScore] = useState<number | null>(null)
-  const [total, setTotal] = useState<number | null>(null)
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [score, setScore] = useState<number | null>(null);
+  const [total, setTotal] = useState<number | null>(null);
 
   useEffect(() => {
-    const scoreParam = searchParams.get("score")
-    const totalParam = searchParams.get("total")
+    const scoreParam = searchParams.get("score");
+    const totalParam = searchParams.get("total");
 
-    if (scoreParam) setScore(Number.parseInt(scoreParam))
-    if (totalParam) setTotal(Number.parseInt(totalParam))
-  }, [searchParams])
+    if (scoreParam) setScore(Number.parseInt(scoreParam));
+    if (totalParam) setTotal(Number.parseInt(totalParam));
+  }, [searchParams]);
 
   const getPercentage = () => {
-    if (score === null || total === null || total === 0) return 0
-    return Math.round((score / total) * 100)
-  }
+    if (score === null || total === null || total === 0) return 0;
+    return Math.round((score / total) * 100);
+  };
 
   const getGrade = () => {
-    const percentage = getPercentage()
-    if (percentage >= 90) return "Excellent"
-    if (percentage >= 80) return "Very Good"
-    if (percentage >= 70) return "Good"
-    if (percentage >= 60) return "Satisfactory"
-    return "Needs Improvement"
-  }
+    const percentage = getPercentage();
+    if (percentage >= 90) return "Excellent";
+    if (percentage >= 80) return "Very Good";
+    if (percentage >= 70) return "Good";
+    if (percentage >= 60) return "Satisfactory";
+    return "Needs Improvement";
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gray-50">
@@ -47,7 +47,10 @@ export default function ResultsPage() {
             </div>
 
             <div className="w-full bg-gray-200 rounded-full h-2.5 mb-6">
-              <div className="bg-primary h-2.5 rounded-full" style={{ width: `${getPercentage()}%` }}></div>
+              <div
+                className="bg-primary h-2.5 rounded-full"
+                style={{ width: `${getPercentage()}%` }}
+              ></div>
             </div>
           </>
         ) : (
@@ -56,12 +59,12 @@ export default function ResultsPage() {
 
         <button
           onClick={() => router.push("/")}
-          className="px-6 py-2 bg-gray-50 text-gray-50 rounded-md hover:bg-gray-50 transition-colors border-0"
+          className="px-6 py-2 bg-gray-50 text-gray-50 rounded-md hover:bg-gray-100 hover:text-gray-100 transition-colors border-0 opacity-0"
+          aria-label="Back to Home"
         >
           Back to Home
         </button>
       </div>
     </main>
-  )
+  );
 }
-
