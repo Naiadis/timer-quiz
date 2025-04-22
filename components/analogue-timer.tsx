@@ -33,7 +33,7 @@ export default function AnalogueTimer({
           if (timerRef.current) {
             clearInterval(timerRef.current);
           }
-          
+
           // Use setTimeout to safely call the time up callback
           setTimeout(() => {
             setIsRunning(false);
@@ -132,13 +132,13 @@ export default function AnalogueTimer({
     }
 
     // Calculate angles for the pie
-    const fixedStartAngle = (Math.PI * 2 * 55) / 60 - Math.PI / 2; // 55-minute mark (adjusted for 5 min timer)
+    const fixedStartAngle = (Math.PI * 2 * 50) / 60 - Math.PI / 2; // 50-minute mark (adjusted for 10 min timer)
     const endAngle = -Math.PI / 2; // 0-minute mark (top)
 
     // Calculate the current start angle based on time remaining
     const progress = 1 - timeRemaining / duration;
 
-    // As time passes, this progressively moves the start angle from 55-minute mark toward 0-minute mark
+    // As time passes, this progressively moves the start angle from 50-minute mark toward 0-minute mark
     const currentStartAngle =
       fixedStartAngle + progress * (endAngle + Math.PI * 2 - fixedStartAngle);
 

@@ -133,6 +133,141 @@ const quizQuestions = [
     options: ["Atlantic", "Indian", "Arctic", "Pacific"],
     correctAnswer: 3,
   },
+  {
+    question: "Which scientist developed the theory of relativity?",
+    options: [
+      "Isaac Newton",
+      "Albert Einstein",
+      "Stephen Hawking",
+      "Niels Bohr",
+    ],
+    correctAnswer: 1,
+  },
+  {
+    question: "What is the capital of Brazil?",
+    options: ["Rio de Janeiro", "São Paulo", "Brasília", "Buenos Aires"],
+    correctAnswer: 2,
+  },
+  {
+    question: "Who painted the Mona Lisa?",
+    options: [
+      "Michelangelo",
+      "Raphael",
+      "Leonardo da Vinci",
+      "Sandro Botticelli",
+    ],
+    correctAnswer: 2,
+  },
+  {
+    question: "What is the hardest natural substance on Earth?",
+    options: ["Diamond", "Titanium", "Platinum", "Quartz"],
+    correctAnswer: 0,
+  },
+  {
+    question: "Which country was formerly known as Persia?",
+    options: ["Iraq", "Turkey", "Iran", "Egypt"],
+    correctAnswer: 2,
+  },
+  {
+    question: "What is the main component of the Earth's atmosphere?",
+    options: ["Oxygen", "Carbon Dioxide", "Hydrogen", "Nitrogen"],
+    correctAnswer: 3,
+  },
+  {
+    question: 'Who wrote "Pride and Prejudice"?',
+    options: [
+      "Charlotte Brontë",
+      "Virginia Woolf",
+      "Emily Dickinson",
+      "Jane Austen",
+    ],
+    correctAnswer: 3,
+  },
+  {
+    question: "What is the smallest country in the world by land area?",
+    options: ["Monaco", "Vatican City", "Liechtenstein", "San Marino"],
+    correctAnswer: 1,
+  },
+  {
+    question: "Which instrument did Mozart primarily compose for?",
+    options: ["Violin", "Piano", "Flute", "Cello"],
+    correctAnswer: 1,
+  },
+  {
+    question: "What is the tallest mountain in the world?",
+    options: ["K2", "Mount Everest", "Kangchenjunga", "Makalu"],
+    correctAnswer: 1,
+  },
+  {
+    question: "Who discovered penicillin?",
+    options: [
+      "Louis Pasteur",
+      "Alexander Fleming",
+      "Marie Curie",
+      "Joseph Lister",
+    ],
+    correctAnswer: 1,
+  },
+  {
+    question: 'Which planet is known as the "Red Planet"?',
+    options: ["Venus", "Jupiter", "Mars", "Mercury"],
+    correctAnswer: 2,
+  },
+  {
+    question: "In which year did the Berlin Wall fall?",
+    options: ["1987", "1989", "1991", "1993"],
+    correctAnswer: 1,
+  },
+  {
+    question: "What is the largest species of big cat?",
+    options: ["Lion", "Jaguar", "Leopard", "Tiger"],
+    correctAnswer: 3,
+  },
+  {
+    question: 'Who wrote "The Great Gatsby"?',
+    options: [
+      "Ernest Hemingway",
+      "F. Scott Fitzgerald",
+      "John Steinbeck",
+      "Mark Twain",
+    ],
+    correctAnswer: 1,
+  },
+  {
+    question: 'Which element has the chemical symbol "K"?',
+    options: ["Krypton", "Calcium", "Potassium", "Copper"],
+    correctAnswer: 2,
+  },
+  {
+    question: "What is the capital of Canada?",
+    options: ["Toronto", "Vancouver", "Montreal", "Ottawa"],
+    correctAnswer: 3,
+  },
+  {
+    question: "Who is credited with inventing the telephone?",
+    options: [
+      "Thomas Edison",
+      "Alexander Graham Bell",
+      "Nikola Tesla",
+      "Guglielmo Marconi",
+    ],
+    correctAnswer: 1,
+  },
+  {
+    question: "What is the largest desert in the world?",
+    options: ["Gobi", "Sahara", "Antarctic Desert", "Arabian Desert"],
+    correctAnswer: 2,
+  },
+  {
+    question: 'Which famous playwright wrote "Hamlet"?',
+    options: [
+      "Tennessee Williams",
+      "Arthur Miller",
+      "William Shakespeare",
+      "Oscar Wilde",
+    ],
+    correctAnswer: 2,
+  },
 ];
 
 export default function Page() {
@@ -204,10 +339,11 @@ export default function Page() {
 
     switch (quizType) {
       case "digital-timer":
-        return <DigitalTimer duration={300} onTimeUp={handleTimeUp} />;
+        return <DigitalTimer duration={600} onTimeUp={handleTimeUp} />;
       case "analogue-timer":
-        return <AnalogueTimer duration={300} onTimeUp={handleTimeUp} />;
+        return <AnalogueTimer duration={600} onTimeUp={handleTimeUp} />;
       default:
+        setTimeout(handleTimeUp, 600000); // 10 minutes in milliseconds
         return null;
     }
   };
